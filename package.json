@@ -1,0 +1,51 @@
+{
+  "name": "stale-repo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Stale Repo",
+  "author": "Tiago Pascoal <tiago@pascoal.net>",
+  "license": "ISC",
+  "repository": "https://github.com/tspascoal/stale-repo.git",
+  "homepage": "https://github.com/tspascoal/stale-repo",
+  "bugs": "https://github.com/tspascoal/stale-repo/issues",
+  "keywords": [
+    "probot",
+    "github",
+    "probot-app"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc && (tsc -w --preserveWatchOutput & nodemon)",
+    "dev": "npm run build:watch",
+    "start": "probot run ./lib/index.js",
+    "lint": "standard **/*.ts --fix"
+  },
+  "dependencies": {
+    "probot": "^9.5.3",
+    "probot-scheduler": "^2.0.0-beta.1"
+  },
+  "devDependencies": {
+    "@types/node": "^13.1.0",
+    "@typescript-eslint/parser": "^2.4.0",
+    "eslint-plugin-typescript": "^0.14.0",
+    "nodemon": "^2.0.4",
+    "smee-client": "^1.1.0",
+    "standard": "^14.3.4",
+    "typescript": "^3.6.4"
+  },
+  "engines": {
+    "node": ">= 8.3.0"
+  },
+  "standard": {
+    "parser": "@typescript-eslint/parser",
+    "env": [
+      "jest"
+    ],
+    "plugins": [
+      "typescript"
+    ]
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}
