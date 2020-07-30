@@ -64,7 +64,7 @@ export class Stale {
      * @param  {any} queryResult
      */
     public isRepoActive (queryResult: any) {
-      return !(queryResult.isArchived || queryResult.isDisabled || queryResult.isLocked)
+      return !(queryResult.repository.isArchived || queryResult.repository.isDisabled || queryResult.repository.isLocked)
     }
 
     /**
