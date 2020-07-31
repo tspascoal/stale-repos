@@ -6,7 +6,7 @@ const createScheduler = require('probot-scheduler')
 
 export = (app: Application) => {
   const intervalHours = parseFloat(process.env.INTERVAL_HOURS || '24')
-  const staleTopic = process.env.STALE_TOPIC || 'stale'
+  const staleTopic = (process.env.STALE_TOPIC || 'stale').toLowerCase()
   const inactivityThresholdHours = parseFloat(process.env.INACTIVITY_HOURS || '4320')
 
   app.log.info(`Going to be called at an inverval of ${intervalHours} hours`)
