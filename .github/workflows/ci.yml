@@ -33,6 +33,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONARCLOUDTOKEN }}
+      with:
+        projectBaseDir: ${{ github.workspace }}
 
     - name: npm test
       run: npm run test
