@@ -1,0 +1,15 @@
+{
+  "action": "repository",
+  "installation": {
+    "account": {
+      "login": "dummy"
+    }
+  },
+  "repository": {
+    "name": "dummy",
+    "full_name": "dummy/dummy",
+    "owner": {
+      "login": "dummy"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+    "data": {
+      "repository": {
+        "id": "MDEwOlJlcG9zaXRvcnkyODA0NDg4NzU=",
+        "isFork": false,
+        "updatedAt": "2020-07-17T18:06:42Z",
+        "pushedAt": "2020-07-17T18:05:35Z",
+        "isArchived": false,
+        "isDisabled": false,
+        "isLocked": true,
+        "issues": {
+          "nodes": [
+            {
+              "updatedAt": "2020-07-17T17:47:53Z"
+            }
+          ]
+        },
+        "pullRequests": {
+          "nodes": [
+            {
+              "updatedAt": "2020-07-17T18:05:34Z"
+            }
+          ]
+        }
+      }
+    }
+  }

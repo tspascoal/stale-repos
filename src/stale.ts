@@ -72,7 +72,7 @@ export class Stale {
      * @param  {any} queryResult
      * @returns number
      */
-    public getElapsedTimeSinceLastUpdate (queryResult: any): number {
+    public getElapsedTimeSinceLastUpdate (queryResult: any, currentTime: Date = new Date()): number {
       const updates = [
         // Don't use updated at, because adding/removing topics changes it. But this make us blind to other changes on the repo metatada
         // queryResult.repository.updatedAt,
@@ -92,7 +92,7 @@ export class Stale {
 
       this.logger.info(`${this.getLoggingContext()} lastUpdate ${lastUpdate}`)
 
-      const lastUpdateAgo = ((new Date()).valueOf() - lastUpdate.valueOf()) / 1000
+      const lastUpdateAgo = (currentTime.valueOf() - lastUpdate.valueOf()) / 1000
 
       this.logger.info(`${this.getLoggingContext()} ago ${lastUpdateAgo} seconds`)
 
