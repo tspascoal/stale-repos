@@ -12,6 +12,8 @@ If a repository has been marked as stale and there is activity after that the ap
 
 > This is just a sample application, it is not offered as a service so if you wish to use it then you need to host it yourself
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=stale-repos&metric=alert_status)](https://sonarcloud.io/dashboard?id=stale-repos) ![CI](https://github.com/tspascoal/stale-repos/workflows/CI/badge.svg)
+
 ## Setup
 
 ```sh
