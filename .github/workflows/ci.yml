@@ -16,6 +16,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        # Disabling shallow clone is recommended for improving relevancy of reporting
+        fetch-depth: 0
 
     - name: Use Node.js ${{ env.NODE_VERSION }}
       uses: actions/setup-node@v1
@@ -28,6 +31,9 @@ jobs:
     - name: npm build
       run: npm run build
 
+    - name: npm test
+      run: npm run test
+
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
       env:
@@ -35,9 +41,6 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONARCLOUDTOKEN }}
       with:
         projectBaseDir: ${{ github.workspace }}
-
-    - name: npm test
-      run: npm run test
 
     - name: npm lint
       run: npm run lint
