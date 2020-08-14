@@ -8,6 +8,7 @@ import clone from 'clone'
 // Requiring our fixtures
 import schedulePayload from './fixtures/schedule.repository.json'
 import activeQueryResult from './fixtures/query-active.json'
+import disabledQueryResult from './fixtures/query-disabled.json'
 import { RepoActivity } from '../src/RepoActivity' // eslint-disable-line no-unused-vars
 const fs = require('fs')
 const path = require('path')
@@ -135,6 +136,26 @@ describe('stale repo bot', () => {
     nock('https://api.github.com')
       .get('/repos/dummy/dummy/topics')
       .reply(200, { names: ['dummyTopic', 'stale'] })
+
+    // topics SHOULD NOT BE updated
+    nock('https://api.github.com')
+      .put('/repos/dummy/dummy/topics', () => {
+        done(expect(false).toBeTruthy())
+        return false
+      })
+      .reply(200)
+
+    await probot.receive({ name: 'schedule.repository', payload: schedulePayload })
+    await done()
+  })
+
+  test('repo not active - disabled', async (done) => {
+    // simulate graphql query
+    const queryResult = clone((<RepoActivity><unknown>disabledQueryResult))
+
+    nock('https://api.github.com')
+      .post('/graphql')
+      .reply(200, queryResult)
 
     // topics SHOULD NOT BE updated
     nock('https://api.github.com')
