@@ -19,7 +19,7 @@
     "dev": "npm run build:watch",
     "start": "probot run ./lib/index.js",
     "lint": "standard **/*.ts --fix",
-    "test": "jest && standard **/*.ts",
+    "test": "jest --coverage && standard **/*.ts",
     "test:watch": "jest --watch --notify --notifyMode=change --coverage"
   },
   "dependencies": {
@@ -35,6 +35,7 @@
     "clone": "^2.1.2",
     "eslint-plugin-typescript": "^0.14.0",
     "jest": "^26.1.0",
+    "jest-sonar": "^0.2.10",
     "nock": "^13.0.3",
     "nodemon": "^2.0.4",
     "smee-client": "^1.1.0",
@@ -55,6 +56,17 @@
     ]
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "collectCoverage": true,
+    "testResultsProcessor": "jest-sonar-reporter",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/test/"
+    ]
+  },
+  "jestSonar": {
+    "reportPath": "reports",
+    "reportFile": "test-reporter.xml",
+    "indent": 4
   }
 }
