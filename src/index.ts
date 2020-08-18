@@ -2,8 +2,6 @@ import { Application } from 'probot' // eslint-disable-line no-unused-vars
 
 import { Stale } from './stale'
 
-const createScheduler = require('probot-scheduler')
-
 export = (app: Application) => {
   const intervalHours = parseFloat(process.env.INTERVAL_HOURS || '24')
   const staleTopic = (process.env.STALE_TOPIC || 'stale').toLowerCase()
@@ -12,11 +10,15 @@ export = (app: Application) => {
   app.log.info(`Going to be called at an inverval of ${intervalHours} hours`)
   app.log.info(`Stale report threshold ${inactivityThresholdHours} hours`)
 
-  // be careful this is called every interval for EACH repo
-  createScheduler(app, {
-    delay: true,
-    interval: intervalHours * 60 * 60 * 1000 // convert hours to milliseconds
-  })
+  if (!process.env.SKIP_SCHEDULER) {
+    const createScheduler = require('probot-scheduler')
+
+    // be careful this is called every interval for EACH repo
+    createScheduler(app, {
+      delay: true,
+      interval: 30 * 1000 // convert hours to milliseconds
+    })
+  }
 
   app.on('schedule.repository', async (context) => {
     const stale = new Stale(context.github, staleTopic, context.repo().owner, context.repo().repo, context.log)
