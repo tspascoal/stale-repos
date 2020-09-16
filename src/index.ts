@@ -7,7 +7,7 @@ export = (app: Application) => {
   const staleTopic = (process.env.STALE_TOPIC || 'stale').toLowerCase()
   const inactivityThresholdHours = parseFloat(process.env.INACTIVITY_HOURS || '4320')
 
-  app.log.info(`Going to be called at an inverval of ${intervalHours} hours`)
+  app.log.info(`Going to be called at an interval of ${intervalHours} hours`)
   app.log.info(`Stale report threshold ${inactivityThresholdHours} hours`)
 
   if (!process.env.SKIP_SCHEDULER) {
@@ -16,7 +16,7 @@ export = (app: Application) => {
     // be careful this is called every interval for EACH repo
     createScheduler(app, {
       delay: true,
-      interval: 30 * 1000 // convert hours to milliseconds
+      interval: intervalHours * 60 * 60 * 1000 // convert hours to milliseconds
     })
   }
 
