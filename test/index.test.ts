@@ -5,8 +5,6 @@ import { Probot } from 'probot'
 
 import clone from 'clone'
 
-import MockDate from 'mockdate'
-
 // Requiring our fixtures
 import schedulePayload from './fixtures/schedule.repository.json'
 import activeQueryResult from './fixtures/query-active.json'
@@ -29,14 +27,13 @@ describe('stale repo bot', () => {
 
   beforeEach(() => {
     nock.disableNetConnect()
-    MockDate.reset()
 
     process.env.SKIP_SCHEDULER = 'true'
     probot = new Probot({ id: 123, cert: mockCert })
     probot.load(staleRepoApp)
   })
 
-  test('repo not stale remove stale topic', async (done) => {
+  test('repo not stale remove stale topic', async () => {
     // simulate graphql query
     const queryResult = clone((<RepoActivity><unknown>activeQueryResult))
     // patch pushed at so repo is not stale
@@ -54,17 +51,17 @@ describe('stale repo bot', () => {
     // topics updated and stale was removed
     nock('https://api.github.com')
       .put('/repos/dummy/dummy/topics', (body: any) => {
-        done(expect(body.names).toMatchObject(['dummyTopic']))
+        expect(body.names).toMatchObject(['dummyTopic'])
 
         return true
       })
       .reply(200)
 
     await probot.receive({ name: 'schedule.repository', payload: schedulePayload })
-    await done()
+    expect(nock.pendingMocks().length).toBe(0)
   })
 
-  test('repo not stale nothing to remove', async (done) => {
+  test('repo not stale nothing to remove', async () => {
     // simulate graphql query
     const queryResult = clone((<RepoActivity><unknown>activeQueryResult))
     // patch pushed at so repo is not stale
@@ -82,13 +79,13 @@ describe('stale repo bot', () => {
     // topics SHOULD NOT BE updated
     nock('https://api.github.com')
       .put('/repos/dummy/dummy/topics', () => {
-        done(expect(false).toBeTruthy())
+        expect(false).toBeTruthy()
         return false
       })
       .reply(200)
 
     await probot.receive({ name: 'schedule.repository', payload: schedulePayload })
-    await done()
+    expect(nock.pendingMocks().length).toBe(1)
   })
 
   test('repo is stale add stale topic', async () => {
@@ -100,9 +97,6 @@ describe('stale repo bot', () => {
     queryResult.data.repository.issues.nodes.pop()
     expect(queryResult.data.repository.pullRequests.nodes.length).toEqual(0)
     expect(queryResult.data.repository.issues.nodes.length).toEqual(0)
-
-    // TODO: once we uncomment this, it stops working
-    // MockDate.set(new Date(2000, 8, 1, 1, 0))
 
     nock('https://api.github.com')
       .post('/graphql')
@@ -155,7 +149,7 @@ describe('stale repo bot', () => {
       .reply(200)
 
     await probot.receive({ name: 'schedule.repository', payload: schedulePayload })
-    
+
     // update topics was not called so there is one pending mock.
     expect(nock.pendingMocks().length).toBe(1)
   })
