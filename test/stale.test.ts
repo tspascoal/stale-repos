@@ -4,6 +4,8 @@ import { Stale } from '../src/stale'
 
 import clone from 'clone'
 
+import MockDate from 'mockdate'
+
 import { RepoActivity } from '../src/RepoActivity' // eslint-disable-line no-unused-vars
 
 import activeQueryResult from './fixtures/query-active.json'
@@ -16,6 +18,8 @@ describe('stale repo Stale tests', () => {
 
   beforeEach(() => {
     const dummy: any = {}
+
+    MockDate.reset()
 
     stale = new Stale(dummy.github, 'stale', 'dummy', 'dummy', new Logger({ name: 'dummy', level: 100 }))
   })
@@ -60,6 +64,20 @@ describe('stale repo Stale tests', () => {
     const isActive = stale.isRepoActive(lockedQueryResult.data)
 
     expect(isActive).toBeFalsy()
+  })
+
+  test('getElapsedTimeSinceLastUpdate - current time (mocked)', () => {
+    const queryResult = clone((<RepoActivity><unknown>activeQueryResult).data)
+
+    queryResult.repository.pushedAt = new Date(2000, 1, 1, 14, 0, 0)
+    queryResult.repository.pullRequests.nodes.pop()
+    queryResult.repository.issues.nodes.pop()
+
+    MockDate.set(new Date(2000, 1, 1, 14, 1, 0))
+
+    const timeSinceLatUpdate = stale.getElapsedTimeSinceLastUpdate(queryResult)
+
+    expect(timeSinceLatUpdate).toEqual(60)
   })
 
   test('get elapsed time since last update - pushedAt', () => {
