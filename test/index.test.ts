@@ -27,6 +27,7 @@ describe('stale repo bot', () => {
 
   beforeEach(() => {
     nock.disableNetConnect()
+    process.env.SKIP_SCHEDULER = 'true'
     probot = new Probot({ id: 123, cert: mockCert })
     probot.load(staleRepoApp)
   })
