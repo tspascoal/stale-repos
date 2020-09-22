@@ -4,8 +4,6 @@ import { Stale } from '../src/stale'
 
 import clone from 'clone'
 
-import MockDate from 'mockdate'
-
 import { RepoActivity } from '../src/RepoActivity' // eslint-disable-line no-unused-vars
 
 import activeQueryResult from './fixtures/query-active.json'
@@ -18,9 +16,6 @@ describe('stale repo Stale tests', () => {
 
   beforeEach(() => {
     const dummy: any = {}
-
-    MockDate.reset()
-
     stale = new Stale(dummy.github, 'stale', 'dummy', 'dummy', new Logger({ name: 'dummy', level: 100 }))
   })
 
@@ -73,7 +68,7 @@ describe('stale repo Stale tests', () => {
     queryResult.repository.pullRequests.nodes.pop()
     queryResult.repository.issues.nodes.pop()
 
-    MockDate.set(new Date(2000, 1, 1, 14, 1, 0))
+    stale.setMockDate(new Date(2000, 1, 1, 14, 1, 0))
 
     const timeSinceLatUpdate = stale.getElapsedTimeSinceLastUpdate(queryResult)
 
@@ -140,7 +135,7 @@ describe('stale repo Stale tests', () => {
 
     const timeSinceLatUpdate = stale.getElapsedTimeSinceLastUpdate(queryResult, currentTime)
 
-    const isStale = stale.isRepoStale(timeSinceLatUpdate, 1) // 1 hour
+    const isStale = stale.hasExceededThreshold(timeSinceLatUpdate, 1) // 1 hour
 
     expect(isStale).toBeFalsy()
   })
@@ -153,7 +148,7 @@ describe('stale repo Stale tests', () => {
 
     const timeSinceLatUpdate = stale.getElapsedTimeSinceLastUpdate(queryResult, currentTime)
 
-    const isStale = stale.isRepoStale(timeSinceLatUpdate, 1) // 1 hour
+    const isStale = stale.hasExceededThreshold(timeSinceLatUpdate, 1) // 1 hour
 
     expect(isStale).toBeFalsy()
   })

@@ -5,10 +5,12 @@ import { Stale } from './stale'
 export = (app: Application) => {
   const intervalHours = parseFloat(process.env.INTERVAL_HOURS || '24')
   const staleTopic = (process.env.STALE_TOPIC || 'stale').toLowerCase()
-  const inactivityThresholdHours = parseFloat(process.env.INACTIVITY_HOURS || '4320')
+  const inactivityThresholdHours = parseFloat(process.env.STALE_THRESHOLD_HOURS || '4320')
+  const archiveThresholdHours = parseFloat(process.env.ARCHIVE_THRESHOLD_HOURS || '8760')
 
   app.log.info(`Going to be called at an interval of ${intervalHours} hours`)
-  app.log.info(`Stale report threshold ${inactivityThresholdHours} hours`)
+  app.log.info(`Stale threshold ${inactivityThresholdHours} hours`)
+  app.log.info(`Archive threshold ${archiveThresholdHours} hours`)
 
   if (!process.env.SKIP_SCHEDULER) {
     const createScheduler = require('probot-scheduler')
@@ -21,7 +23,15 @@ export = (app: Application) => {
   }
 
   app.on('schedule.repository', async (context) => {
+
+    if(context.isBot) {
+      return
+    }
+
     const stale = new Stale(context.github, staleTopic, context.repo().owner, context.repo().repo, context.log)
+
+    // HACK: Inject mock date for tests
+    stale.setMockDate(context.payload.__mockNow)
 
     const queryResult = await stale.getRepoActivity()
 
@@ -31,16 +41,18 @@ export = (app: Application) => {
 
     const lastUpdate = stale.getElapsedTimeSinceLastUpdate(queryResult)
 
-    const isStale = stale.isRepoStale(lastUpdate, inactivityThresholdHours)
+    if (inactivityThresholdHours > 0) {
+      const isStale = stale.hasExceededThreshold(lastUpdate, inactivityThresholdHours)
 
-    const repoTopics = await stale.getRepoTopics()
+      const repoTopics = await stale.getRepoTopics()
 
-    await stale.updateRepoTopics(isStale, repoTopics)
+      await stale.updateRepoTopics(isStale, repoTopics)
+    }
+
+    if (archiveThresholdHours > 0) {
+      const shouldBeArchived = stale.hasExceededThreshold(lastUpdate, archiveThresholdHours)
+
+      await stale.archiveRepo(shouldBeArchived)
+    }
   })
-
-  // For more information on building apps:
-  // https://probot.github.io/docs/
-
-  // To get your app running against GitHub, see:
-  // https://probot.github.io/docs/development/
 }

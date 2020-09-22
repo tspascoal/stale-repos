@@ -27,21 +27,20 @@
     "probot-scheduler": "^2.0.0-beta.1"
   },
   "devDependencies": {
-    "@types/clone": "^0.1.30",
+    "@types/clone": "^2.1.0",
     "@types/jest": "^26.0.7",
     "@types/nock": "^11.1.0",
     "@types/node": "^13.1.0",
     "@typescript-eslint/parser": "^2.4.0",
     "clone": "^2.1.2",
     "eslint-plugin-typescript": "^0.14.0",
-    "jest": "^26.1.0",
-    "jest-sonar": "^0.2.10",
-    "mockdate": "^3.0.2",
-    "nock": "^13.0.3",
+    "jest": "^26.4.2",
+    "jest-sonar": "^0.2.11",
+    "nock": "^13.0.4",
     "nodemon": "^2.0.4",
-    "smee-client": "^1.1.0",
+    "smee-client": "^1.2.2",
     "standard": "^14.3.4",
-    "ts-jest": "^26.1.4",
+    "ts-jest": "^26.4.0",
     "typescript": "^3.6.4"
   },
   "engines": {
@@ -61,8 +60,8 @@
     "collectCoverage": true,
     "testResultsProcessor": "jest-sonar-reporter",
     "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "/test/"
+      "<rootDir>/node_modules/",
+      "<rootDir>/test/"
     ]
   },
   "jestSonar": {

@@ -1,11 +1,12 @@
 import { GitHubAPI, Logger } from 'probot' // eslint-disable-line no-unused-vars
 
 export class Stale {
-  private github: GitHubAPI;
-  private owner: string;
-  private repo: string;
-  private logger: Logger;
-  private staleTopic: string;
+  private github: GitHubAPI
+  private owner: string
+  private repo: string
+  private logger: Logger
+  private staleTopic: string
+  mockDate: Date | undefined
 
   /** @constructor
    * @param  {GitHubAPI} github
@@ -75,7 +76,7 @@ export class Stale {
    * @param  {any} queryResult
    * @returns number
    */
-  public getElapsedTimeSinceLastUpdate (queryResult: any, currentTime: Date = new Date()): number {
+  public getElapsedTimeSinceLastUpdate (queryResult: any, currentTime: Date = this.getDate()): number {
     const updates = [
       // Don't use updated at, because adding/removing topics changes it. But this make us blind to other changes on the repo metatada
       // queryResult.repository.updatedAt,
@@ -97,18 +98,18 @@ export class Stale {
 
     const lastUpdateAgo = (currentTime.valueOf() - lastUpdate.valueOf()) / 1000
 
-    this.logger.info(`${this.getLoggingContext()} ago ${lastUpdateAgo} seconds`)
+    this.logger.info(`${this.getLoggingContext()} ago ${lastUpdateAgo} seconds ${currentTime}`)
 
     return lastUpdateAgo
   }
 
   /**
-   * Checks if the repo is stale given maxInactivityHours parameter
+   * Checks if the repo has passed a  given threshold (hours)
    * @param  {number} lastUpdateSeconds - How many seconds ago the repo had the last update
-   * @param  {number} maxInactivityHours - Threshold upon which the repo will be considered stale
+   * @param  {number} maxInactivityHours - Threshold
    * @returns boolean
    */
-  public isRepoStale (lastUpdateSeconds: number, maxInactivityHours: number): boolean {
+  public hasExceededThreshold (lastUpdateSeconds: number, maxInactivityHours: number): boolean {
     return lastUpdateSeconds > maxInactivityHours * 60 * 60
   }
 
@@ -179,5 +180,38 @@ export class Stale {
     }
 
     return hasChanges
+  }
+
+  public async archiveRepo (archive: boolean) {
+    this.logger.info(`${this.getLoggingContext()} shouldArchive ${archive}`)
+
+    if (archive) {
+      this.logger.info(`${this.getLoggingContext()} archiving`)
+
+      await this.github.repos.update({
+        repo: this.repo,
+        owner: this.owner,
+        archived: true
+      })
+    }
+  }
+
+  /**
+   * Use a mocked date/time instead of current one.
+   *
+   * Only for testing purposes. Have to use this ugly hack since mocking
+   * global date object messes with probot behavior
+   * @param  {Date} date
+   */
+  public setMockDate (date: Date) {
+    this.mockDate = date
+  }
+
+  /**
+   * Return mocked datetime or current datetime
+   * @returns Date
+   */
+  private getDate (): Date {
+    return this.mockDate || new Date()
   }
 }
