@@ -23,11 +23,6 @@ export = (app: Application) => {
   }
 
   app.on('schedule.repository', async (context) => {
-
-    if(context.isBot) {
-      return
-    }
-
     const stale = new Stale(context.github, staleTopic, context.repo().owner, context.repo().repo, context.log)
 
     // HACK: Inject mock date for tests
